@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-pod
+  template:
+    metadata:
+      labels:
+        app: identity-pod
+    spec:
+      containers:
+      - name: identity-container
+        image: sandeepsoni/eshop-identity
+        ports:
+        - containerPort: 80
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: Secret
+          value: "This is a demo secret"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-srv
+spec:
+  type: ClusterIP 
+  selector:
+    app: identity-pod
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80

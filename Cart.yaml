@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart-pod
+  template:
+    metadata:
+      labels:
+        app: cart-pod
+    spec:
+      containers:
+      - name: mynginx-container
+        image: sandeepsoni/eshop-cart
+        ports:
+        - containerPort: 80
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: RedisConnectionString
+          value: "redis-srv"
+        - name: Secret
+          value: "This is a demo secret"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-srv
+spec:
+  type: ClusterIP 
+  selector:
+    app: cart-pod
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80

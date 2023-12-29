@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webmvc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webmvc-pod
+  template:
+    metadata:
+      labels:
+        app: webmvc-pod
+    spec:
+      containers:
+      - name: webmvc-container
+        image: sandeepsoni/eshop-webapp
+        ports:
+        - containerPort: 80
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: CatalogUrl
+          value: "http://catalog-srv"
+        - name: CartUrl
+          value: "http://cart-srv"
+        - name: IdentityServerUrl
+          value: "http://identity-srv"
+ 
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webmvc-srv
+spec:
+  type: LoadBalancer
+  selector:
+    app: webmvc-pod
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 80
